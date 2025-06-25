@@ -19,6 +19,9 @@
       "!node_modules/devDependencies/**/*",
       "!test/**/*",
       "!dist/**/*"
+    ],
+    "extraResources": [
+      "assets/**/*"
     ]
   },
   "scripts": {
@@ -30,7 +33,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "electron-context-menu": "^3.6.1"
+    "electron-context-menu": "^3.6.1",
+    "@electron/remote": "^2.1.2" 
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.0.4",
