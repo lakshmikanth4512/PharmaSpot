@@ -32,7 +32,7 @@
     "express-rate": "^0.0.1",
     "express-rate-limit": "^6.7.0",
     "html2canvas": "^1.4.1",
-    "http": "0.0.0",
+    "http": "^0.0.0",
     "https": "^1.0.0",
     "is-port-reachable": "^4.0.0",
     "jquery": "^3.6.3",
@@ -52,7 +52,7 @@
     "lodash": "^4.17.21"
   },
   "scripts": {
-    "electron": "cross-env NODE_ENV=dev nodemon --exec \"\"electron .\"\"",
+    "electron": "cross-env NODE_ENV=dev nodemon --exec \"electron .\"",
     "electron-build": "electron-builder",
     "package-win": "electron-packager . PharmaSpot --overwrite --asar=false --platform=win32 --arch=x64 --icon=assets/images/icon.ico --prune=true --out=release-builds --version-string.ProductName=\"PharmaSpot\"",
     "start": "electron-forge start",
@@ -82,7 +82,7 @@
     "@electron-forge/publisher-github": "^6.0.4",
     "browser-sync": "^3.0.3",
     "cross-env": "^7.0.3",
-    "electron": "^22.3.27",
+    "electron": "8.2.0",
     "electron-is-dev": "^2.0.0",
     "electron-log": "^4.4.8",
     "electron-reloader": "^1.2.3",
