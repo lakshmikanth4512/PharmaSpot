@@ -1,109 +1,40 @@
-require("@electron/remote/main").initialize(); // Initialize Electron Remote
-const { app, BrowserWindow, ipcMain, screen } = require("electron");
+const { app, BrowserWindow } = require("electron");
 const path = require("path");
-const contextMenu = require("electron-context-menu"); // Context menu for right-click actions
-
-// Squirrel Events for handling Windows installer events
-const setupEvents = require("./installers/setupEvents");
-if (setupEvents.handleSquirrelEvent()) {
-    return; // Exit if a Squirrel event was handled
-}
 
 let mainWindow;
 
 function createWindow() {
-    // Get primary display size for setting window dimensions
-    const primaryDisplay = screen.getPrimaryDisplay();
-    const { width, height } = primaryDisplay.workAreaSize;
+  mainWindow = new BrowserWindow({
+    width: 1280, // Set initial width of the application window
+    height: 720, // Set initial height of the application window
+    webPreferences: {
+      nodeIntegration: true, // Allow Node.js integration
+      contextIsolation: false, // Disable context isolation for compatibility
+    },
+  });
 
-    // Create the main application window
-    mainWindow = new BrowserWindow({
-        width: width,
-        height: height,
-        frame: true,
-        webPreferences: {
-            nodeIntegration: true, // Allow Node.js integration
-            enableRemoteModule: true, // Enable @electron/remote
-            contextIsolation: false, // Context isolation off for backward compatibility
-        },
-    });
+  // Load the main HTML file
+  mainWindow.loadFile(path.join(__dirname, "index.html"));
 
-    mainWindow.maximize(); // Maximize the window
-    mainWindow.show(); // Show the window
-
-    // Load the main HTML file
-    mainWindow.loadURL(`file://${path.join(__dirname, "index.html")}`);
-
-    // Handle window close event
-    mainWindow.on("closed", () => {
-        mainWindow = null;
-    });
+  // Handle window closed event
+  mainWindow.on("closed", () => {
+    mainWindow = null;
+  });
 }
 
-// Event listener for when Electron is ready
-app.on("ready", () => {
-    createWindow();
-});
+// Event: When Electron has finished initializing
+app.on("ready", createWindow);
 
-// Recreate the window when the app is reactivated on macOS
+// Event: Recreate a window when the app is reactivated (macOS only)
 app.on("activate", () => {
-    if (mainWindow === null) {
-        createWindow();
-    }
+  if (mainWindow === null) {
+    createWindow();
+  }
 });
 
-// Quit the application when all windows are closed, except on macOS
+// Event: Quit the application when all windows are closed
 app.on("window-all-closed", () => {
-    if (process.platform !== "darwin") {
-        app.quit();
-    }
-});
-
-// Error handling for uncaught exceptions
-process.on("uncaughtException", (error) => {
-    console.error("Uncaught Exception:", error);
-});
-
-// Error handling for unhandled promise rejections
-process.on("unhandledRejection", (reason, promise) => {
-    console.error("Unhandled Rejection at:", promise, "reason:", reason);
-});
-
-// IPC event handlers for communication between main and renderer process
-ipcMain.on("app-quit", () => {
+  if (process.platform !== "darwin") {
     app.quit();
-});
-
-ipcMain.on("app-reload", () => {
-    if (mainWindow) {
-        mainWindow.reload();
-    }
-});
-
-// Add a context menu with basic options
-contextMenu({
-    prepend: (params, browserWindow) => [
-        {
-            label: "Refresh",
-            click: () => {
-                if (mainWindow) {
-                    mainWindow.reload();
-                }
-            },
-        },
-    ],
-});
-
-// Live reload during development
-if (!app.isPackaged) {
-    try {
-        require("electron-reloader")(module);
-    } catch (error) {
-        console.error("Error enabling live reload:", error);
-    }
-}
-
-// Enable @electron/remote for all created browser windows
-app.on("browser-window-created", (_, window) => {
-    require("@electron/remote/main").enable(window.webContents);
+  }
 });
