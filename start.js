@@ -1,40 +1,68 @@
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
+const contextMenu = require("electron-context-menu");
 
+// Global reference to the main window
 let mainWindow;
 
+// Function to create the main application window
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1280, // Set initial width of the application window
-    height: 720, // Set initial height of the application window
+    width: 1280,
+    height: 720,
     webPreferences: {
-      nodeIntegration: true, // Allow Node.js integration
-      contextIsolation: false, // Disable context isolation for compatibility
+      nodeIntegration: true,
+      contextIsolation: false,
     },
   });
 
-  // Load the main HTML file
+  // Load the index.html file
   mainWindow.loadFile(path.join(__dirname, "index.html"));
 
-  // Handle window closed event
+  // When the window is closed
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
 }
 
-// Event: When Electron has finished initializing
-app.on("ready", createWindow);
+// Handle Electron ready event
+app.on("ready", () => {
+  createWindow();
 
-// Event: Recreate a window when the app is reactivated (macOS only)
+  // Add a context menu with refresh functionality
+  contextMenu({
+    prepend: (params, browserWindow) => [
+      {
+        label: "Refresh",
+        click: () => {
+          if (mainWindow) {
+            mainWindow.reload();
+          }
+        },
+      },
+    ],
+  });
+});
+
+// Quit the app when all windows are closed, except on macOS
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
+    app.quit();
+  }
+});
+
+// Recreate the window if the app is activated (e.g., macOS behavior)
 app.on("activate", () => {
   if (mainWindow === null) {
     createWindow();
   }
 });
 
-// Event: Quit the application when all windows are closed
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
+// Error handling
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught Exception:", error);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
 });
