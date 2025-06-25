@@ -74,5 +74,6 @@
     "jest": "^29.7.0",
     "nodemon": "^3.0.1",
     "ts-node": "^10.9.2"
+    "electron-prebuilt-compile": "8.2.0"
   }
 }
