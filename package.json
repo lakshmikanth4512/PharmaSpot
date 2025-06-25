@@ -61,8 +61,8 @@
     "lodash": "^4.17.21"
   },
   "scripts": {
-    "start": "electron-forge start",
-    "start:debug": "DEBUG=electron-forge* electron-forge start",
+    "start": "electron-forge start -- --no-sandbox",
+    "start:debug": "DEBUG=electron-forge* electron-forge start -- --no-sandbox",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
